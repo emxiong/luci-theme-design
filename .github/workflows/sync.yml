@@ -1,0 +1,53 @@
+name: Sync luci-theme-design
+
+on:
+  workflow_run:
+    workflows: ["Delete workflows"]
+    types:
+      - completed
+
+jobs:
+  sync-theme:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # 设置时区为中国大陆
+      - name: Set timezone to China Standard Time
+        run: sudo timedatectl set-timezone Asia/Shanghai
+
+      # 检出目标仓库
+      - name: Checkout target repository
+        uses: actions/checkout@v3
+        with:
+          repository: helmx/luci-theme-design
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: luci-theme-design
+
+      # 克隆源仓库并覆盖文件
+      - name: Clone source repository and replace files
+        run: |
+          cd luci-theme-design
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' ! -name '.github' ! -name 'README.md' -exec rm -rf {} +
+          git clone -b openwrt-23.05 --single-branch --filter=blob:none https://github.com/coolsnowwolf/luci.git luci-source
+          cp -r luci-source/themes/luci-theme-design/* ./ 
+          LATEST_COMMIT=$(cd luci-source && git log -1 --pretty=format:"%s" themes/luci-theme-design)
+          LATEST_COMMIT_TIME=$(cd luci-source && git log -1 --pretty=format:"%ci" themes/luci-theme-design)
+          rm -rf luci-source
+          echo "LATEST_COMMIT=${LATEST_COMMIT}" >> $GITHUB_ENV
+          echo "LATEST_COMMIT_TIME=${LATEST_COMMIT_TIME}" >> $GITHUB_ENV
+
+      # 提交更改
+      - name: Commit and Force Push changes
+        run: |
+          cd luci-theme-design
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          COMMIT_MSG="${LATEST_COMMIT}(${LATEST_COMMIT_TIME})"
+          git add .
+          git commit -m "${COMMIT_MSG}"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LATEST_COMMIT: ${{ env.LATEST_COMMIT }}
+          LATEST_COMMIT_TIME: ${{ env.LATEST_COMMIT_TIME }}

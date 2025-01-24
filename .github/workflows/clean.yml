@@ -1,0 +1,19 @@
+name: Delete workflows
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: 30 21 * * *
+
+permissions: write-all
+
+jobs:
+  auto_clean:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old Releases and Workflows
+        uses: ophub/delete-releases-workflows@main
+        with:
+          gh_token: ${{secrets.GITHUB_TOKEN}}
+          delete_workflows: true
+          workflows_keep_day: 0

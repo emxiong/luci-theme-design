@@ -1,1 +1,2 @@
- 搬运 Lean 开源的 LUCI JS 版本 design 主题
+- [luci-theme-design](https://github.com/coolsnowwolf/luci/tree/openwrt-23.05/themes/luci-theme-design)主题来自于Lean的luci源openwrt-23.05分支
+- 北京时间每天早上 5 点 30 分自动更新
