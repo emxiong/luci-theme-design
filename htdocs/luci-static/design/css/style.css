@@ -879,6 +879,18 @@ span[data-indicator="uci-changes"] {
     content: "\e67e";
 }
 
+.main>.main-left>.nav>li>a[data-title="QuickStart"]:before {
+    content: "\e676";
+}
+
+.main>.main-left>.nav>li>a[data-title="QuickStart"] {
+    padding: 0.675rem 0 0.675rem 2.5rem;
+}
+
+.main>.main-left>.nav>li>a[data-title="iStore"] {
+    padding: 0.675rem 0 0.675rem 2.5rem;
+}
+
 .main>.main-left>.nav>li>a[data-title="iStore"]:before {
     content: "\e676";
 }
